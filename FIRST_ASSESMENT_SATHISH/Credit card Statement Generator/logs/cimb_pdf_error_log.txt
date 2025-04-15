@@ -1,0 +1,2 @@
+[2025-04-12 21:08:43] Error generating PDF: TTF Font file not found: fonts/NotoSansJP-Regular.ttf
+[2025-04-12 21:08:53] Error generating PDF: TTF Font file not found: fonts/NotoSansJP-Regular.ttf

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Statements - CIMB PDF Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f5f5f5;
+            padding-top: 50px;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            background-color: #8B0000;
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+        }
+        .btn-primary {
+            background-color: #8B0000;
+            border-color: #8B0000;
+        }
+        .btn-primary:hover {
+            background-color: #6d0000;
+            border-color: #6d0000;
+        }
+        .customer-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .table {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h3>Customer Statements</h3>
+                    </div>
+                    <div class="card-body">
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category, message in messages %}
+                                    <div class="alert alert-{{ category if category != 'error' else 'danger' }}">
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+                        
+                        <div class="customer-info">
+                            <h4>{{ customer[1] }}</h4>
+                            <p><strong>Card Number:</strong> {{ customer[3] }}</p>
+                            <p><strong>Account Number:</strong> {{ customer[4] }}</p>
+                            <p><strong>Address:</strong> {{ customer[2] }}</p>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Statement Date</th>
+                                        <th>Period</th>
+                                        <th>Outstanding Balance</th>
+                                        <th>Minimum Due</th>
+                                        <th>Due Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for statement in statements %}
+                                    <tr>
+                                        <td>{{ statement[2] }}</td>
+                                        <td>{{ statement[3] }} - {{ statement[4] }}</td>
+                                        <td>RM {{ "%.2f"|format(statement[5]|float) }}</td>
+                                        <td>RM {{ "%.2f"|format(statement[6]|float) }}</td>
+                                        <td>{{ statement[7] }}</td>
+                                        <td>
+                                            <a href="{{ url_for('generate_statement', customer_id=customer[0], statement_id=statement[0], lang_code=lang_code) }}" class="btn btn-primary btn-sm">Generate PDF</a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <a href="{{ url_for('index') }}" class="btn btn-secondary">Back to Search</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
