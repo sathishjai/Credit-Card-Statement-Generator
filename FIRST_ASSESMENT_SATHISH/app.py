@@ -15,6 +15,8 @@ os.makedirs("logs", exist_ok=True)
 os.makedirs("fonts", exist_ok=True)
 os.makedirs("static", exist_ok=True)
 os.makedirs("templates", exist_ok=True)
+os.makedirs("test_cases", exist_ok=True)  # Add test_cases directory
+os.makedirs("sample_output", exist_ok=True)  # Add sample_output directory
 
 # Font mapping for different languages with supported character sets
 FONT_MAPPING = {
