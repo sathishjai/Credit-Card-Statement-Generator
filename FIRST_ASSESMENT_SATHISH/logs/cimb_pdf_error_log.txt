@@ -1,0 +1,41 @@
+[2025-04-12 21:08:43] Error generating PDF: TTF Font file not found: fonts/NotoSansJP-Regular.ttf
+[2025-04-12 21:08:53] Error generating PDF: TTF Font file not found: fonts/NotoSansJP-Regular.ttf
+[2025-04-16 11:09:19] Error generating PDF: FPDF error: Undefined font: noto B
+[2025-04-16 11:47:06] Error generating PDF: FPDF error: Undefined font: noto I
+[2025-04-16 11:48:09] Error generating PDF: FPDF error: Undefined font: noto I
+[2025-04-16 11:50:52] Error generating PDF: FPDF error: Undefined font: noto I
+[2025-04-16 11:55:17] Error generating PDF: 'datetime.date' object has no attribute 'decode'
+[2025-04-16 11:57:56] Error generating PDF: 'datetime.date' object has no attribute 'decode'
+[2025-04-16 14:30:48] Error generating PDF: FPDF error: Not a PNG file: static/images/cimb_logo.png
+[2025-04-16 14:31:03] Error generating PDF: FPDF error: Not a PNG file: static/images/cimb_logo.png
+[2025-04-16 14:37:18] Error generating PDF: name 'stmt_date_str' is not defined
+[2025-04-17 09:43:31] Error generating PDF: generate_pdf.<locals>.<lambda>() takes 1 positional argument but 2 were given
+[2025-04-17 11:06:44] Error generating PDF: 'dict object' has no attribute 'COPYRIGHT'
+[2025-04-17 11:10:07] Error generating PDF: 'dict object' has no attribute 'COPYRIGHT'
+[2025-04-17 11:11:46] Error generating PDF: 'dict object' has no attribute 'COPYRIGHT'
+[2025-04-17 11:11:57] Error generating PDF: 'dict object' has no attribute 'COPYRIGHT'
+[2025-04-17 11:18:38] Error generating PDF: 'tr' is undefined
+[2025-04-17 11:20:03] Error generating PDF: 'dict object' has no attribute 'COPYRIGHT'
+[2025-04-17 11:34:37] Error generating PDF: 'dict object' has no attribute 'COPYRIGHT'
+[2025-04-17 11:34:49] Error generating PDF: 'dict object' has no attribute 'COPYRIGHT'
+[2025-04-17 11:41:13] Error generating PDF: unsupported format string passed to Undefined.__format__
+[2025-04-17 11:44:30] Error generating PDF: 'dict object' has no attribute 'COPYRIGHT'
+[2025-04-17 12:06:11] Error generating PDF: 'translations' is undefined
+[2025-04-17 12:09:08] Error generating PDF: 'translations' is undefined
+[2025-04-17 14:22:18] Error generating PDF: name 'prev_bal' is not defined
+[2025-04-17 14:23:17] Error generating PDF: name 'prev_bal' is not defined
+[2025-04-17 14:24:55] Error generating PDF: name 'prev_bal' is not defined
+[2025-04-17 14:25:56] Error generating PDF: name 'prev_bal' is not defined
+[2025-04-17 14:28:11] Error generating PDF: name 'prev_bal' is not defined
+[2025-04-17 15:29:29] Error generating PDF: name 'prev_bal' is not defined
+[2025-04-17 15:38:07] Error generating PDF: name 'prev_bal' is not defined
+[2025-04-17 17:18:31] Error generating PDF: name 'prev_bal' is not defined
+[2025-04-17 17:41:54] Error in generate_pdf: 'translations' is undefined
+[2025-04-18 06:41:52] Error generating PDF: 'datetime.date' object has no attribute 'decode'
+[2025-04-18 06:43:14] Error generating PDF: 'datetime.date' object has no attribute 'decode'
+[2025-04-18 06:50:43] Error generating PDF: object of type 'datetime.date' has no len()
+[2025-04-18 06:52:54] Error generating PDF: object of type 'datetime.date' has no len()
+[2025-04-18 06:54:19] Error generating PDF: object of type 'datetime.date' has no len()
+[2025-04-18 06:56:00] Error generating PDF: object of type 'datetime.date' has no len()
+[2025-04-18 07:09:22] Error generating PDF: name 'FPDF' is not defined
+[2025-04-18 07:12:20] Failed to generate PDF with WeasyPrint

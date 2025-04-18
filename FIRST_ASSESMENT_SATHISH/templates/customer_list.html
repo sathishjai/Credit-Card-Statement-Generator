@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer List - CIMB PDF Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f5f5f5;
+            padding-top: 50px;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            background-color: #8B0000;
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+        }
+        .btn-primary {
+            background-color: #8B0000;
+            border-color: #8B0000;
+        }
+        .btn-primary:hover {
+            background-color: #6d0000;
+            border-color: #6d0000;
+        }
+        .table {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h3>Customer Search Results</h3>
+                    </div>
+                    <div class="card-body">
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category, message in messages %}
+                                    <div class="alert alert-{{ category if category != 'error' else 'danger' }}">
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+                        
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Card Number</th>
+                                        <th>Account Number</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for customer in customers %}
+                                    <tr>
+                                        <td>{{ customer[0] }}</td>
+                                        <td>{{ customer[1] }}</td>
+                                        <td>{{ customer[3] }}</td>
+                                        <td>{{ customer[4] }}</td>
+                                        <td>
+                                            <a href="{{ url_for('show_statements', customer_id=customer[0], lang_code=lang_code) }}" class="btn btn-primary btn-sm">View Statements</a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <a href="{{ url_for('index') }}" class="btn btn-secondary">Back to Search</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

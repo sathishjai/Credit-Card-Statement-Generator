@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>CIMB Credit Card Statement</title>
+    <style>
+        @font-face {
+            font-family: 'NotoSans';
+            src: url('{{ font_path }}') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'NotoSansBold';
+            src: url('{{ bold_font_path }}') format('truetype');
+            font-weight: bold;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'NotoSansTamil';
+            src: url('{{ tamil_font_path }}') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'NotoSansTamilBold';
+            src: url('{{ tamil_bold_font_path }}') format('truetype');
+            font-weight: bold;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'NotoSansThai';
+            src: url('{{ thai_font_path }}') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'NotoSansThaBold';
+            src: url('{{ thai_bold_font_path }}') format('truetype');
+            font-weight: bold;
+            font-style: normal;
+        }
+        :root {
+            --primary-color: #E31837;
+            --border-color: #ddd;
+        }
+
+        @page {
+            size: A4;
+            margin: 2.5cm;
+            @top-right {
+                content: "Page " counter(page) " of " counter(pages);
+                font-size: 9pt;
+            }
+        }
+
+        body {
+            font-family: 'NotoSans', sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #000;
+            font-size: 12px;
+            line-height: 1.4;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* Language-specific styles */
+        [lang="ta"] {
+            font-family: 'NotoSansTamil', 'NotoSans', sans-serif;
+            line-height: 1.6; /* Increased line height for Tamil text */
+        }
+
+        [lang="ta"] .amount,
+        [lang="ta"] .amount-column,
+        [lang="ta"] .section-title {
+            font-family: 'NotoSansTamilBold', 'NotoSansBold', sans-serif;
+        }
+
+        [lang="th"] {
+            font-family: 'NotoSansThai', 'NotoSans', sans-serif;
+            line-height: 1.8; /* Increased line height for Thai text */
+        }
+
+        [lang="th"] .amount,
+        [lang="th"] .amount-column,
+        [lang="th"] .section-title {
+            font-family: 'NotoSansThaBold', 'NotoSansBold', sans-serif;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+            padding: 15px 0;
+        }
+        .logo-container {
+            width: 120px;
+        }
+        .logo-container img {
+            width: 100%;
+            height: auto;
+        }
+        .statement-info {
+            text-align: right;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+        .customer-info {
+            margin: 20px 0;
+            line-height: 1.5;
+            font-size: 11px;
+        }
+        .card-type {
+            text-align: right;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        .campaign-box {
+            border: 1px solid var(--primary-color);
+            padding: 12px;
+            margin: 15px 0;
+            text-align: center;
+            color: var(--primary-color);
+            font-size: 11px;
+            break-inside: avoid;
+        }
+        .campaign-box h3 {
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+        .section-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin: 20px 0 15px;
+            color: #333;
+        }
+        .account-summary {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .summary-box {
+            border: 1px solid #ddd;
+            padding: 12px;
+            font-size: 11px;
+        }
+        .summary-box .amount {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-top: 5px;
+        }
+        .transaction-details table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 10px;
+        }
+        .transaction-details th {
+            background-color: #f5f5f5;
+            padding: 8px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .transaction-details td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #eee;
+        }
+        .amount-column {
+            text-align: right;
+            font-family: 'NotoSansBold', sans-serif;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 9px;
+            color: #666;
+            line-height: 1.4;
+        }
+        .page-number {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-size: 9px;
+            color: #999;
+        }
+        
+        .points-column {
+            text-align: right;
+            width: 80px;
+        }
+        
+        .transactions-summary table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .transactions-summary td {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .transactions-summary tr:last-child td {
+            border-bottom: 2px solid #333;
+            font-weight: bold;
+        }
+        
+        [dir="rtl"] {
+            text-align: right;
+        }
+        
+        .transaction-details {
+            break-inside: avoid-page;
+        }
+
+        .footer {
+            position: running(footer);
+            font-size: 9px;
+            color: #666;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        @page {
+            @bottom-center {
+                content: element(footer);
+            }
+        }
+    </style>
+</head>
+<body lang="{{ lang }}">
+    <div class="header">
+        <div class="logo-container">
+            <img src="file:///{{ logo_path }}" alt="CIMB Bank Logo">
+        </div>
+        <div class="statement-info">
+            <div>{{ tr('STATEMENT DATE') }}: {{ stmt_date_str }}</div>
+            <div>{{ tr('STATEMENT PERIOD') }}: {{ period_start_str }} - {{ period_end_str }}</div>
+        </div>
+    </div>
+
+    <div class="customer-info">
+        <div>{{ name }}</div>
+        <div>{{ address }}</div>
+        <div>Card No: {{ card_no }}</div>
+        <div>Account No: {{ acc_no }}</div>
+    </div>
+
+    <div class="card-type">CIMB VISA PLATINUM</div>
+
+    <div class="campaign-box">
+        <h3>{{ translations[lang]['Credit Card eStatement Campaign 2024'] }}</h3>
+        <p>{{ translations[lang]['Switch to eStatements...'] }}</p>
+    </div>
+
+    <h3>{{ translations[lang]['ACCOUNT SUMMARY'] }}</h3>
+    <div class="account-summary">
+        <div class="summary-box">
+            <div>{{ tr('TOTAL OUTSTANDING BALANCE') }}</div>
+            <div class="amount">RM {{ '{:,.2f}'.format(out_bal) }}</div>
+        </div>
+        <div class="summary-box">
+            <div>{{ tr('MINIMUM PAYMENT DUE') }}</div>
+            <div class="amount">RM {{ '{:,.2f}'.format(min_due) }}</div>
+        </div>
+        <div class="summary-box">
+            <div>{{ tr('PAYMENT DUE DATE') }}</div>
+            <div class="amount">{{ due_date_str }}</div>
+        </div>
+        <div class="summary-box">
+            <div>{{ tr('REWARDS POINTS BALANCE') }}</div>
+            <div class="amount">{{ points }} pts</div>
+        </div>
+    </div>
+
+    <div class="transactions-summary">
+        <h3>{{ tr('PAYMENT & TRANSACTIONS SUMMARY') }}</h3>
+        <table>
+            <tr>
+                <td>Previous Balance</td>
+                <td class="amount-column">RM {{ '{:,.2f}'.format(prev_bal) }}</td>
+            </tr>
+            <tr>
+                <td>Payments</td>
+                <td class="amount-column">- RM {{ '{:,.2f}'.format(payments) }}</td>
+            </tr>
+            <tr>
+                <td>Current Balance</td>
+                <td class="amount-column">RM {{ '{:,.2f}'.format(out_bal) }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="transaction-details">
+        <h3>{{ tr('TRANSACTION DETAILS') }}</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>{{ tr('Date') }}</th>
+                    <th>{{ tr('Description') }}</th>
+                    <th>{{ tr('Category') }}</th>
+                    <th class="amount-column">{{ tr('Amount') }} (S$)</th>
+                    <th class="points-column">{{ tr('Points') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for txn in transactions %}
+                <tr>
+                    <td>{{ txn[0] }}</td>
+                    <td>{{ txn[1] }}</td>
+                    <td>{{ txn[3] }}</td>
+                    <td class="amount-column">{{ '{:,.2f}'.format(txn[2]|float) }}</td>
+                    <td class="points-column">{{ txn[4] if txn|length > 4 else '' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer">
+        <p>{{ translations[lang]['COMPUTER_GENERATED'] }}</p>
+        <p>{{ translations[lang]['CUSTOMER_SERVICE'] }}</p>
+        <p>{{ translations[lang]['COPYRIGHT'].format(statement_year) }}</p>
+    </div>
+</body>
+</html>
