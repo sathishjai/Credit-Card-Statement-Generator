@@ -181,9 +181,9 @@ translations = {
         "PAYMENT DUE DATE": "วันครบกำหนดชำระเงิน",
         "REWARDS POINTS BALANCE": "ยอดคะแนนสะสม",
         "PAYMENT & TRANSACTIONS SUMMARY": "สรุปการชำระเงินและรายการ",
-        "TRANSACTION DETAILS": "รายละเอียดรายการ",
+        "TRANSACTION DETAILS": "รายละเอียมการ",
         "Date": "วันที่",
-        "Description": "รายละเอียด",
+        "Description": "รายละเอียม",
         "Amount": "จำนวนเงิน",
         "Credit Limit": "วงเงินเครดิต",
         "Available Credit": "เครดิตคงเหลือ"
@@ -236,26 +236,75 @@ def generate_pdf(customer, statement, transactions, lang="en"):
         pdf.set_font("Noto", "", 10)
         pdf.multi_cell(0, 6, tr("Switch to eStatements...", lang), fill=True)
 
-        # Account Summary
+        # Account Summary with table boxes
         pdf.ln(3)
         pdf.set_font("Noto", "", 12)
         pdf.set_text_color(128, 0, 0)
         pdf.cell(0, 8, tr("ACCOUNT SUMMARY", lang), ln=True)
 
-        pdf.set_font("Noto", "", 10)
+        # Create a table for account summary
         pdf.set_text_color(0, 0, 0)
-        pdf.cell(100, 6, f"{tr('TOTAL OUTSTANDING BALANCE', lang)}\nRM {float(out_bal):,.2f}", ln=False)
-        pdf.cell(0, 6, f"{tr('MINIMUM PAYMENT DUE', lang)}\nRM {float(min_due):,.2f}", ln=True)
+        pdf.set_font("Noto", "", 10)
+        pdf.set_draw_color(128, 0, 0)  # Red border for tables
+        pdf.set_line_width(0.3)  # Slightly thicker lines
+        
+        # Table dimensions
+        table_width = 190
+        col_width = table_width / 2
+        row_height = 20
+        
+        # Row 1: Outstanding Balance and Minimum Payment
+        pdf.set_fill_color(245, 245, 245)  # Light gray background
+        
+        # Cell 1: Total Outstanding Balance
+        pdf.rect(10, pdf.get_y(), col_width, row_height)
+        pdf.set_xy(10, pdf.get_y())
+        pdf.set_font("Noto", "", 9)
+        pdf.cell(col_width, 6, tr("TOTAL OUTSTANDING BALANCE", lang), align='C')
+        pdf.set_xy(10, pdf.get_y() + 6)
+        pdf.set_font("Noto", "", 11)
+        pdf.cell(col_width, 10, f"RM {float(out_bal):,.2f}", align='C')
+        
+        # Cell 2: Minimum Payment Due
+        pdf.rect(10 + col_width, pdf.get_y() - 6, col_width, row_height)
+        pdf.set_xy(10 + col_width, pdf.get_y() - 6)
+        pdf.set_font("Noto", "", 9)
+        pdf.cell(col_width, 6, tr("MINIMUM PAYMENT DUE", lang), align='C')
+        pdf.set_xy(10 + col_width, pdf.get_y() + 6)
+        pdf.set_font("Noto", "", 11)
+        pdf.cell(col_width, 10, f"RM {float(min_due):,.2f}", align='C')
+        
+        # Move to next row
+        pdf.set_y(pdf.get_y() + 14)
+        
+        # Row 2: Payment Due Date and Rewards Points
+        # Cell 1: Payment Due Date
+        pdf.rect(10, pdf.get_y(), col_width, row_height)
+        pdf.set_xy(10, pdf.get_y())
+        pdf.set_font("Noto", "", 9)
+        pdf.cell(col_width, 6, tr("PAYMENT DUE DATE", lang), align='C')
+        pdf.set_xy(10, pdf.get_y() + 6)
+        pdf.set_font("Noto", "", 11)
+        pdf.cell(col_width, 10, f"{due_date}", align='C')
+        
+        # Cell 2: Rewards Points Balance
+        pdf.rect(10 + col_width, pdf.get_y() - 6, col_width, row_height)
+        pdf.set_xy(10 + col_width, pdf.get_y() - 6)
+        pdf.set_font("Noto", "", 9)
+        pdf.cell(col_width, 6, tr("REWARDS POINTS BALANCE", lang), align='C')
+        pdf.set_xy(10 + col_width, pdf.get_y() + 6)
+        pdf.set_font("Noto", "", 11)
+        pdf.cell(col_width, 10, f"{int(points):,} pts", align='C')
+        
+        # Move to next section
+        pdf.set_y(pdf.get_y() + 20)
 
-        pdf.cell(100, 6, f"{tr('PAYMENT DUE DATE', lang)}\n{due_date}", ln=False)
-        pdf.cell(0, 6, f"{tr('REWARDS POINTS BALANCE', lang)}\n{int(points):,} pts", ln=True)
-
-        # Transaction Summary
-        pdf.ln(4)
+        # Transaction Summary with table
         pdf.set_font("Noto", "", 12)
         pdf.set_text_color(128, 0, 0)
         pdf.cell(0, 8, tr("PAYMENT & TRANSACTIONS SUMMARY", lang), ln=True)
 
+        # Calculate transaction categories
         categories = {
             "Previous Balance": 0.00,
             "Payments": 0.00,
@@ -280,29 +329,111 @@ def generate_pdf(customer, statement, transactions, lang="en"):
             elif "Interest" in ttype:
                 categories["Interest Charges"] += amount
 
+        # Create transaction summary table
+        pdf.set_text_color(0, 0, 0)
         pdf.set_font("Noto", "", 10)
+        pdf.set_draw_color(128, 0, 0)  # Red border for tables
+        
+        # Table headers
+        col1_width = 120
+        col2_width = 70
+        row_height = 8
+        
+        # Draw table header
+        pdf.set_fill_color(245, 245, 245)  # Light gray background
+        pdf.rect(10, pdf.get_y(), col1_width + col2_width, row_height, 'F')
+        pdf.set_xy(10, pdf.get_y())
+        pdf.cell(col1_width, row_height, "Category", border=1)
+        pdf.cell(col2_width, row_height, "Amount", border=1, ln=True)
+        
+        # Draw table rows
+        alternate = False
         for k, v in categories.items():
+            alternate = not alternate
+            fill_color = 245 if alternate else 255
+            pdf.set_fill_color(fill_color, fill_color, fill_color)
+            
             sign = "+" if v > 0 and k != "Payments" else ""
-            pdf.cell(120, 6, k)
-            pdf.cell(0, 6, f"{sign} RM {abs(v):,.2f}", ln=True)
+            pdf.set_xy(10, pdf.get_y())
+            pdf.cell(col1_width, row_height, k, border=1, fill=alternate)
+            pdf.cell(col2_width, row_height, f"{sign} RM {abs(v):,.2f}", border=1, fill=alternate, ln=True)
+        
+        # Add a total row with bold formatting
+        pdf.set_font("Noto", "", 10)
+        pdf.set_fill_color(230, 230, 230)  # Darker gray for total
+        pdf.set_xy(10, pdf.get_y())
+        pdf.cell(col1_width, row_height, "Total", border=1, fill=True)
+        pdf.cell(col2_width, row_height, f"RM {float(out_bal):,.2f}", border=1, fill=True, ln=True)
 
-        # Transaction Details
+        # Transaction Details with table boxes
         pdf.ln(4)
         pdf.set_font("Noto", "", 12)
         pdf.set_text_color(128, 0, 0)
         pdf.cell(0, 8, tr("TRANSACTION DETAILS", lang), ln=True)
 
-        pdf.set_font("Noto", "", 10)
+        # Create transaction details table with boxes
         pdf.set_text_color(0, 0, 0)
-        pdf.cell(40, 6, tr("Date", lang))
-        pdf.cell(100, 6, tr("Description", lang))
-        pdf.cell(0, 6, tr("Amount", lang), ln=True)
+        pdf.set_font("Noto", "", 10)
+        pdf.set_draw_color(128, 0, 0)  # Red border for tables
+        
+        # Table headers with improved styling
+        date_width = 40
+        desc_width = 100
+        amount_width = 50
+        row_height = 8
+        
+        # Draw table header with fill
+        pdf.set_fill_color(245, 245, 245)  # Light gray background
+        pdf.set_xy(10, pdf.get_y())
+        pdf.cell(date_width, row_height, tr("Date", lang), border=1, fill=True)
+        pdf.cell(desc_width, row_height, tr("Description", lang), border=1, fill=True)
+        pdf.cell(amount_width, row_height, tr("Amount", lang), border=1, fill=True, ln=True)
+        
+        # Draw transaction rows with alternating colors
+        if transactions:
+            alternate = False
+            for txn in transactions:
+                date, desc, amount, _ = txn
+                alternate = not alternate
+                fill_color = 245 if alternate else 255
+                pdf.set_fill_color(fill_color, fill_color, fill_color)
+                
+                # Format amount with color based on positive/negative
+                amount_float = float(amount)
+                
+                # Draw cells with borders
+                pdf.set_xy(10, pdf.get_y())
+                pdf.set_text_color(0, 0, 0)  # Reset text color for all cells
+                pdf.cell(date_width, row_height, str(date), border=1, fill=alternate)
+                
+                # Handle long descriptions by truncating if needed
+                desc_str = str(desc)
+                if len(desc_str) > 40:
+                    desc_str = desc_str[:37] + "..."
+                pdf.cell(desc_width, row_height, desc_str, border=1, fill=alternate)
+                
+                pdf.cell(amount_width, row_height, f"RM {abs(amount_float):,.2f}", border=1, fill=alternate, ln=True)
+        else:
+            # No transactions message
+            pdf.set_xy(10, pdf.get_y())
+            pdf.set_text_color(0, 0, 0)
+            pdf.cell(date_width + desc_width + amount_width, row_height, "No transactions found for this period", border=1, ln=True)
+        
+        # Reset text color
+        pdf.set_text_color(0, 0, 0)
 
-        for txn in transactions:
-            date, desc, amount, _ = txn
-            pdf.cell(40, 6, str(date))
-            pdf.cell(100, 6, str(desc))
-            pdf.cell(0, 6, f"RM {float(amount):,.2f}", ln=True)
+        # Remove the duplicate transaction listing that was previously here
+        # The code below is removed to avoid duplicating transaction details
+        # pdf.set_font("Noto", "", 10)
+        # pdf.set_text_color(0, 0, 0)
+        # pdf.cell(40, 6, tr("Date", lang))
+        # pdf.cell(100, 6, tr("Description", lang))
+        # pdf.cell(0, 6, tr("Amount", lang), ln=True)
+        # for txn in transactions:
+        #     date, desc, amount, _ = txn
+        #     pdf.cell(40, 6, str(date))
+        #     pdf.cell(100, 6, str(desc))
+        #     pdf.cell(0, 6, f"RM {float(amount):,.2f}", ln=True)
 
         filename = f"pdfs/{name.replace(' ', '_')}_Statement_{stmt_date}.pdf"
         pdf.output(filename)
