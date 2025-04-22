@@ -39,3 +39,8 @@
 [2025-04-18 06:56:00] Error generating PDF: object of type 'datetime.date' has no len()
 [2025-04-18 07:09:22] Error generating PDF: name 'FPDF' is not defined
 [2025-04-18 07:12:20] Failed to generate PDF with WeasyPrint
+[2025-04-22 14:20:06] Error generating PDF: name 'categories' is not defined
+[2025-04-22 14:27:07] Error generating PDF: cannot access local variable 'categories' where it is not associated with a value
+[2025-04-22 14:48:59] Error generating PDF: FPDF error: Undefined font: noto 
+[2025-04-22 14:49:09] Error generating PDF: FPDF error: Undefined font: noto 
+[2025-04-22 14:58:17] Error generating PDF: tr() missing 1 required positional argument: 'lang'
