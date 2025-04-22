@@ -424,28 +424,35 @@ def generate_pdf(customer, statement, transactions, lang="en"):
         pdf.set_font("Noto", "B", 14)
         pdf.set_text_color(128, 0, 0)
         pdf.cell(0, 10, "Credit Card Statement CIMB Bank", align='C', ln=True)
-        
+        pdf.ln(5)
         # Statement date with centered format
-        pdf.set_font("Noto", "", 10)
+        pdf.set_font("Noto", "B", 10)
         pdf.set_text_color(0, 0, 0)
         #pdf.cell(0, 6, f"{tr('STATEMENT DATE', lang)}: {stmt_date_str}          {tr('STATEMENT', lang)}: {period_start_str} - {period_end_str}", align='C', ln=True)
-        pdf.cell(120, 6, f"{tr('STATEMENT DATE', lang)}: {stmt_date_str}", ln=False)
-        #pdf.cell(0, 6, f"Page 1/1", align='R', ln=True)  # Changed format and alignment
-        pdf.cell(0, 6, f"{tr('      STATEMENT ', lang)}: {period_start_str} - {period_end_str}", ln=True)
+        pdf.cell(0, 6, f"{tr('STATEMENT DATE', lang)}: {stmt_date_str}", align='L', ln=True)
+        pdf.cell(0, 6, f"{tr('STATEMENT PERIOD', lang)}: {period_start_str} - {period_end_str}", align='L', ln=True)
         # Continue with customer info
         pdf.ln(5)
-        pdf.set_font("Noto", "B", 12)
+        pdf.set_font("Noto", "B", 16)
         pdf.cell(120, 8, name.upper(), ln=False)
-        pdf.set_font("Noto", "", 10)
+        pdf.set_font("Noto", "B", 10)
         pdf.cell(0, 8, "CIMB VISA PLATINUM", align='R', ln=True)
 
         # Address and card details
         for line in address.split('\n'):
             pdf.cell(120, 6, line, ln=False)
             if line == address.split('\n')[0]:  # First line
-                pdf.cell(0, 6, f"{tr('Credit Limit', lang)}: RM {float(credit_limit):,.2f}", align='R', ln=True)
+                # Fix alignment issue by using a fixed width for the label
+                pdf.cell(48, 6, f"{tr('Credit Limit', lang)}: ", align='R', ln=False)
+                pdf.set_text_color(0, 128, 0)  # Set green color for amount only
+                pdf.cell(0, 6, f"RM {float(credit_limit):,.2f}", ln=True)
+                pdf.set_text_color(0, 0, 0)  # Reset to black
             elif line == address.split('\n')[1]:  # Second line
-                pdf.cell(0, 6, f"{tr('Available Credit', lang)}: RM {float(available_credit):,.2f}", align='R', ln=True)
+                # Fix alignment issue by using a fixed width for the label
+                pdf.cell(48, 6, f"{tr('Available Credit', lang)}: ", align='R', ln=False)
+                pdf.set_text_color(0, 128, 0)  # Set green color for amount only
+                pdf.cell(0, 6, f"RM {float(available_credit):,.2f}", ln=True)
+                pdf.set_text_color(0, 0, 0)  # Reset to black
             else:
                 pdf.ln()
 
@@ -465,13 +472,14 @@ def generate_pdf(customer, statement, transactions, lang="en"):
         pdf.set_xy(15, pdf.get_y())
         pdf.multi_cell(pdf.w - 30, 4, tr("Switch to eStatements...", lang))
         '''
-        # Account Summary with grid layout
+        # Account Summary with grid layout - enhanced with bold text
         pdf.ln(8)
-        pdf.set_font("Noto", "B", 12)
+        pdf.set_font("Noto", "B", 12)  # Bold font for header
         pdf.set_text_color(128, 0, 0)
         pdf.cell(0, 8, tr("ACCOUNT SUMMARY", lang), ln=True)
 
-        # Create a grid for account summary
+
+        # Create a grid for account summary with bold values
         pdf.set_text_color(0, 0, 0)
         pdf.set_font("Noto", "", 10)
         grid_width = (pdf.w - 20) / 2
@@ -482,14 +490,23 @@ def generate_pdf(customer, statement, transactions, lang="en"):
         pdf.rect(10 + grid_width, pdf.get_y(), grid_width, 20, 'F')
         
         pdf.set_xy(15, pdf.get_y() + 2)
-        pdf.set_font("Noto", "B", 9)
+        pdf.set_font("Noto", "B", 9)  # Bold font for labels
         pdf.cell(grid_width - 10, 5, tr("TOTAL OUTSTANDING BALANCE", lang), ln=False)
         pdf.cell(grid_width - 10, 5, tr("MINIMUM PAYMENT DUE", lang), ln=True)
         
         pdf.set_xy(15, pdf.get_y() + 2)
-        pdf.set_font("Noto", "", 11)
-        pdf.cell(grid_width - 10, 5, f"RM {float(out_bal):,.2f}", ln=False)
-        pdf.cell(grid_width - 10, 5, f"RM {float(min_due):,.2f}", ln=True)
+        pdf.set_font("Noto", "B", 11)  # Bold font for values
+        # First amount - Total Outstanding Balance
+        pdf.cell(15, 5, "RM ", ln=False)  # Reduced width from 20 to 15
+        pdf.set_text_color(0, 128, 0)  # Set green color for amount only
+        pdf.cell(grid_width - 25, 5, f"{float(out_bal):,.2f}", ln=False)  # Adjusted width
+        pdf.set_text_color(0, 0, 0)  # Reset to black
+        
+        # Second amount - Minimum Payment Due
+        pdf.cell(15, 5, "RM ", ln=False)  # Reduced width from 20 to 15
+        pdf.set_text_color(0, 128, 0)  # Set green color for amount only
+        pdf.cell(grid_width - 25, 5, f"{float(min_due):,.2f}", ln=True)  # Adjusted width
+        pdf.set_text_color(0, 0, 0)  # Reset to black
 
         # Row 2
         pdf.ln(8)
@@ -498,22 +515,26 @@ def generate_pdf(customer, statement, transactions, lang="en"):
         pdf.rect(10 + grid_width, pdf.get_y(), grid_width, 20, 'F')
         
         pdf.set_xy(15, pdf.get_y() + 2)
-        pdf.set_font("Noto", "B", 9)
+        pdf.set_font("Noto", "B", 9)  # Bold font for labels
         pdf.cell(grid_width - 10, 5, tr("PAYMENT DUE DATE", lang), ln=False)
         pdf.cell(grid_width - 10, 5, tr("REWARDS POINTS BALANCE", lang), ln=True)
         
         pdf.set_xy(15, pdf.get_y() + 2)
-        pdf.set_font("Noto", "", 11)
+        pdf.set_font("Noto", "B", 11)  # Bold font for values
         pdf.cell(grid_width - 10, 5, due_date_str, ln=False)
+        pdf.set_text_color(0, 128, 0)  # Set green color for points only
         pdf.cell(grid_width - 10, 5, f"{int(points):,} pts", ln=True)
+        pdf.set_text_color(0, 0, 0)  # Reset to black
 
-        # Transaction Summary
+        # Transaction Summary with bold text
         pdf.ln(4)
-        pdf.set_font("Noto", "B", 12)
-        pdf.set_text_color(128, 0, 0)  # Set color to red
+        pdf.set_font("Noto", "B", 12)  # Bold font for header
+        pdf.set_text_color(128, 0, 0)
         pdf.cell(0, 8, tr("PAYMENT & TRANSACTIONS SUMMARY", lang), ln=True)
-        pdf.set_text_color(0, 0, 0)  # Reset color back to black
+        pdf.set_text_color(0, 0, 0)
         pdf.ln(4)
+        
+        # Categories with bold text for both labels and values
         categories = {
             "Previous Balance": 0.00,
             "Payments": 0.00,
@@ -538,11 +559,21 @@ def generate_pdf(customer, statement, transactions, lang="en"):
             elif "Interest" in ttype:
                 categories["Interest Charges"] += amount
 
-        pdf.set_font("Noto", "", 10)
+        # Use bold font for transaction summary items
+        pdf.set_font("Noto", "B", 10)  # Bold font for all transaction summary items
         for k, v in categories.items():
             sign = "+" if v > 0 and k != "Payments" else ""
-            pdf.cell(120, 6, k)
+            pdf.cell(120, 6, tr(k, lang))  # Bold category name
+            
+            # Set color based on value
+            if (v > 0 and k != "Payments") or (v < 0 and k == "Payments"):
+                pdf.set_text_color(0, 128, 0)  # Green for positive impact on balance
+            elif (v < 0 and k != "Payments") or (v > 0 and k == "Payments"):
+                pdf.set_text_color(255, 0, 0)  # Red for negative impact on balance
+            
+            # Bold amount values
             pdf.cell(0, 6, f"{sign} RM {abs(v):,.2f}", ln=True)
+            pdf.set_text_color(0, 0, 0)  # Reset to black
 
         # Transaction Details
         pdf.ln(4)
@@ -615,8 +646,19 @@ def generate_pdf(customer, statement, transactions, lang="en"):
             # All cells now use bold font
             pdf.cell(col_widths[0], row_height, " " + date_str, border=1, fill=alternate, align='L')
             pdf.cell(col_widths[1], row_height, " " + str(desc), border=1, fill=alternate, align='L')
+            
+            # Set color to red for withdrawals (debits)
+            if amount_float < 0:
+                pdf.set_text_color(255, 0, 0)  # Red for debit amounts
             pdf.cell(col_widths[2], row_height, withdrawal + " ", border=1, align='R', fill=alternate)
+            pdf.set_text_color(0, 0, 0)  # Reset to black
+            
+            # Set color to green for deposits (credits)
+            if amount_float > 0:
+                pdf.set_text_color(0, 128, 0)  # Green for credit amounts
             pdf.cell(col_widths[3], row_height, deposit + " ", border=1, align='R', fill=alternate)
+            pdf.set_text_color(0, 0, 0)  # Reset to black
+            
             pdf.cell(col_widths[4], row_height, f"{running_balance:,.2f} ", border=1, align='R', fill=alternate, ln=True)
 
         # Closing balance row with enhanced styling
@@ -822,6 +864,8 @@ def view_customers():
     conn.close()
     
     return render_template('all_customers.html', customers=customers)
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
